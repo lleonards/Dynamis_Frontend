@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('dynamis_token');
     const savedUser = localStorage.getItem('dynamis_user');
+
     if (token && savedUser) {
       try {
         setUser(JSON.parse(savedUser));
@@ -40,17 +41,33 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const res = await api.post('/api/auth/login', { email, password });
+
     localStorage.setItem('dynamis_token', res.data.access_token);
     localStorage.setItem('dynamis_refresh', res.data.refresh_token);
     localStorage.setItem('dynamis_user', JSON.stringify(res.data.user));
+
     setUser(res.data.user);
     await fetchCredits();
+
     return res.data;
   };
 
+  // 🔥 REGISTRO COM LOGIN AUTOMÁTICO
   const register = async (nome, email, password) => {
-    const res = await api.post('/api/auth/register', { nome, email, password });
-    return res.data;
+    // 1️⃣ Cria o usuário
+    await api.post('/api/auth/register', { nome, email, password });
+
+    // 2️⃣ Faz login automático
+    const loginRes = await api.post('/api/auth/login', { email, password });
+
+    localStorage.setItem('dynamis_token', loginRes.data.access_token);
+    localStorage.setItem('dynamis_refresh', loginRes.data.refresh_token);
+    localStorage.setItem('dynamis_user', JSON.stringify(loginRes.data.user));
+
+    setUser(loginRes.data.user);
+    await fetchCredits();
+
+    return loginRes.data;
   };
 
   const logout = () => {
@@ -63,14 +80,29 @@ export const AuthProvider = ({ children }) => {
 
   const useCredit = async (ferramenta) => {
     const res = await api.post('/api/credits/usar', { ferramenta });
+
     if (res.data.success && !res.data.ilimitado) {
       setCredits(res.data.creditos);
     }
+
     return res.data;
   };
 
   return (
-    <AuthContext.Provider value={{ user, credits, plano, ilimitado, loading, login, register, logout, useCredit, fetchCredits }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        credits,
+        plano,
+        ilimitado,
+        loading,
+        login,
+        register,
+        logout,
+        useCredit,
+        fetchCredits
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
