@@ -17,26 +17,41 @@ export const AuthProvider = ({ children }) => {
       setPlano(res.data.plano);
       setIlimitado(res.data.ilimitado);
       return res.data;
-    } catch {
+    } catch (error) {
       return null;
     }
   }, []);
 
+  // 🔐 VALIDAÇÃO REAL DA SESSÃO AO INICIAR
   useEffect(() => {
     const token = localStorage.getItem('dynamis_token');
     const savedUser = localStorage.getItem('dynamis_user');
 
-    if (token && savedUser) {
+    if (!token || !savedUser) {
+      setLoading(false);
+      return;
+    }
+
+    const validateSession = async () => {
       try {
         setUser(JSON.parse(savedUser));
-        fetchCredits().finally(() => setLoading(false));
-      } catch {
+
+        const creditsData = await fetchCredits();
+
+        // Se não conseguiu buscar créditos, sessão inválida
+        if (!creditsData) {
+          throw new Error('Sessão inválida');
+        }
+
+      } catch (error) {
         localStorage.clear();
+        setUser(null);
+      } finally {
         setLoading(false);
       }
-    } else {
-      setLoading(false);
-    }
+    };
+
+    validateSession();
   }, [fetchCredits]);
 
   const login = async (email, password) => {
@@ -54,10 +69,8 @@ export const AuthProvider = ({ children }) => {
 
   // 🔥 REGISTRO COM LOGIN AUTOMÁTICO
   const register = async (nome, email, password) => {
-    // 1️⃣ Cria o usuário
     await api.post('/api/auth/register', { nome, email, password });
 
-    // 2️⃣ Faz login automático
     const loginRes = await api.post('/api/auth/login', { email, password });
 
     localStorage.setItem('dynamis_token', loginRes.data.access_token);
