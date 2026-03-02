@@ -38,7 +38,7 @@ function AppRoutes() {
 
   return (
     <>
-      {user && <Navbar />}
+      <Navbar />
       <Routes>
         <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
