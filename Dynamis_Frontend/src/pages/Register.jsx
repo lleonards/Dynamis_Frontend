@@ -4,8 +4,6 @@ import { useAuth } from '../components/AuthContext';
 import toast from 'react-hot-toast';
 import { UserPlus, Eye, EyeOff, Gift } from 'lucide-react';
 
-const logoUrl = import.meta.env.VITE_LOGO_URL || 'https://www.genspark.ai/api/files/s/vSPekgD2';
-
 export default function Register() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -18,9 +16,17 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!nome || !email || !password) return toast.error('Preencha todos os campos.');
-    if (password !== confirmPass) return toast.error('As senhas não coincidem.');
-    if (password.length < 6) return toast.error('Senha deve ter pelo menos 6 caracteres.');
+    if (!nome || !email || !password) {
+      return toast.error('Preencha todos os campos.');
+    }
+
+    if (password !== confirmPass) {
+      return toast.error('As senhas não coincidem.');
+    }
+
+    if (password.length < 6) {
+      return toast.error('Senha deve ter pelo menos 6 caracteres.');
+    }
 
     setLoading(true);
     try {
@@ -35,39 +41,69 @@ export default function Register() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'radial-gradient(ellipse at top, #141428 0%, #0d0d0f 60%)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '24px'
-    }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'radial-gradient(ellipse at top, #141428 0%, #0d0d0f 60%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+      }}
+    >
       <div style={{ width: '100%', maxWidth: '420px' }}>
+        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <img src={logoUrl} alt="Dynamis" style={{ height: '50px', objectFit: 'contain' }} />
-          <p style={{ color: '#606070', fontSize: '0.85rem', marginTop: '8px' }}>
+          <img
+            src="/Dynamis.png"
+            alt="Dynamis"
+            style={{ height: '60px', objectFit: 'contain' }}
+          />
+          <p
+            style={{
+              color: '#606070',
+              fontSize: '0.85rem',
+              marginTop: '8px',
+            }}
+          >
             Instalações Elétricas Residenciais
           </p>
         </div>
 
         {/* Banner gratuito */}
-        <div style={{
-          background: 'rgba(76,175,130,0.08)',
-          border: '1px solid rgba(76,175,130,0.25)',
-          borderRadius: '10px',
-          padding: '12px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          marginBottom: '20px'
-        }}>
+        <div
+          style={{
+            background: 'rgba(76,175,130,0.08)',
+            border: '1px solid rgba(76,175,130,0.25)',
+            borderRadius: '10px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            marginBottom: '20px',
+          }}
+        >
           <Gift size={18} style={{ color: '#4caf82', flexShrink: 0 }} />
-          <p style={{ color: '#4caf82', fontSize: '0.85rem', fontWeight: '500' }}>
+          <p
+            style={{
+              color: '#4caf82',
+              fontSize: '0.85rem',
+              fontWeight: '500',
+            }}
+          >
             🎁 <strong>2 créditos grátis</strong> para novos usuários!
           </p>
         </div>
 
         <div className="card">
-          <h2 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '24px', textAlign: 'center' }}>
+          <h2
+            style={{
+              fontSize: '1.3rem',
+              fontWeight: '700',
+              marginBottom: '24px',
+              textAlign: 'center',
+            }}
+          >
             Criar conta
           </h2>
 
@@ -108,10 +144,20 @@ export default function Register() {
                   style={{ paddingRight: '44px' }}
                   required
                 />
-                <button type="button" onClick={() => setShowPass(!showPass)} style={{
-                  position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', color: '#606070', cursor: 'pointer'
-                }}>
+                <button
+                  type="button"
+                  onClick={() => setShowPass(!showPass)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: '#606070',
+                    cursor: 'pointer',
+                  }}
+                >
                   {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
@@ -129,16 +175,43 @@ export default function Register() {
               />
             </div>
 
-            <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }} disabled={loading}>
-              {loading ? <span className="loading-spinner" /> : <UserPlus size={16} />}
+            <button
+              type="submit"
+              className="btn-primary"
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                marginTop: '8px',
+              }}
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="loading-spinner" />
+              ) : (
+                <UserPlus size={16} />
+              )}
               {loading ? 'Criando conta...' : 'Criar conta grátis'}
             </button>
           </form>
 
-          <div style={{ textAlign: 'center', marginTop: '20px', borderTop: '1px solid #2a2a38', paddingTop: '20px' }}>
+          <div
+            style={{
+              textAlign: 'center',
+              marginTop: '20px',
+              borderTop: '1px solid #2a2a38',
+              paddingTop: '20px',
+            }}
+          >
             <p style={{ color: '#606070', fontSize: '0.9rem' }}>
               Já tem conta?{' '}
-              <Link to="/login" style={{ color: '#6ba3cc', textDecoration: 'none', fontWeight: '600' }}>
+              <Link
+                to="/login"
+                style={{
+                  color: '#6ba3cc',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                }}
+              >
                 Fazer login
               </Link>
             </p>
